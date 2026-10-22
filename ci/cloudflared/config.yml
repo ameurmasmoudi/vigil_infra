@@ -1,0 +1,10 @@
+tunnel: da1631f9-0e69-4ede-9d35-4c5795a26131
+credentials-file: /etc/cloudflared/da1631f9-0e69-4ede-9d35-4c5795a26131.json
+
+ingress:
+  - hostname: vigil-ci.ameur.dev
+    path: '^/github-webhook/$'
+    service: http://jenkins:8080
+  - service: http_status:404
+
+

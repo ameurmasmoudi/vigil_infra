@@ -1,0 +1,87 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:2.580.1-lts-jdk25
+    ports:
+      - '127.0.0.1:5000:8080'
+    volumes:
+      - jenkins_data:/var/jenkins_home
+  
+  sonarqube:
+    image: sonarqube:26.10.0.133078-community
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    ports:
+      - '127.0.0.1:9000:9000'
+    environment:
+      - SONAR_JDBC_USERNAME=${SONAR_DB_USER}
+      - SONAR_JDBC_PASSWORD=${SONAR_DB_PASSWORD}
+      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube-db:5432/${SONAR_DB_NAME}
+    depends_on:
+       sonarqube-db:
+         condition: service_healthy
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+
+  sonarqube-db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${SONAR_DB_USER}
+      - POSTGRES_PASSWORD=${SONAR_DB_PASSWORD}
+      - POSTGRES_DB=${SONAR_DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SONAR_DB_USER} -d ${SONAR_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dind:
+    image: docker:29.9.1-dind
+    privileged: true
+    command: ["--bip=10.200.0.1/24", "--default-address-pool=base=10.201.0.0/16,size=24"]
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+      DOCKER_TLS_SAN: DNS:dind
+    volumes:
+      - client_certs:/certs/client
+      - dind_data:/var/lib/docker
+
+  agent:
+    build: ./agent
+    depends_on:
+      - jenkins
+      - dind
+    environment:
+      JENKINS_URL: http://jenkins:8080
+      JENKINS_AGENT_NAME: docker-agent
+      JENKINS_SECRET: ${JENKINS_SECRET}
+      DOCKER_HOST: tcp://dind:2376
+      DOCKER_TLS_VERIFY: "1"
+      DOCKER_CERT_PATH: /certs/client
+    volumes:
+      - client_certs:/certs/client:ro
+      - maven_cache:/home/jenkins/.m2
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.3
+    command: tunnel --no-autoupdate run
+    volumes:
+      - ./cloudflared:/etc/cloudflared:ro
+    depends_on:
+      - jenkins
+
+volumes:
+  jenkins_data:
+  sonarqube_extensions:
+  sonarqube_data:
+  postgres_data:
+  sonarqube_logs:
+  client_certs:
+  dind_data:
+  maven_cache:
