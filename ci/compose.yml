@@ -67,6 +67,7 @@ services:
     volumes:
       - client_certs:/certs/client:ro
       - maven_cache:/home/jenkins/.m2
+      - trivy_db:/home/jenkins/.cache/trivy
 
   cloudflared:
     image: cloudflare/cloudflared:2026.10.3
@@ -85,3 +86,4 @@ volumes:
   client_certs:
   dind_data:
   maven_cache:
+  trivy_db:
