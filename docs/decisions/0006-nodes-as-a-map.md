@@ -19,6 +19,8 @@ role, zero or several servers, a host number outside 2–254 and duplicate host 
 
 - Removing `vigil-agent-1` destroys only that VM. With `count`, removing the middle element shifts the next one's
   index, so OpenTofu would destroy and recreate the VMs after it.
-- Adding a node is one map entry; the network reservation, the outputs and the inventory follow automatically.
+- Adding a node is one map entry; the outputs and the inventory follow automatically. Its host number must be in
+  the pre-reserved DHCP block ([0007](0007-pre-reserved-dhcp-block.md)): reservations built from this map forced
+  the network to be replaced on every node change.
 - The defaults in `variables.tf` describe this cluster, so no `.tfvars` file is needed. A local `terraform.tfvars`
   (gitignored) can override them, for example smaller VMs on a machine with less RAM.

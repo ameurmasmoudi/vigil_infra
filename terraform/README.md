@@ -19,7 +19,8 @@ Why it looks like this:
 [network and addressing](../docs/decisions/0002-network-and-addressing.md),
 [base image](../docs/decisions/0003-base-image-pinning.md),
 [OpenTofu and provider](../docs/decisions/0004-opentofu-and-libvirt-provider.md),
-[nodes as a map](../docs/decisions/0006-nodes-as-a-map.md).
+[nodes as a map](../docs/decisions/0006-nodes-as-a-map.md),
+[pre-reserved DHCP block](../docs/decisions/0007-pre-reserved-dhcp-block.md).
 
 ## Files
 
@@ -27,8 +28,8 @@ Why it looks like this:
 |------|----------|
 | `versions.tf` | OpenTofu and provider pins, libvirt connection (`qemu:///system`) |
 | `variables.tf` | The node map, network range, SSH user and public key path, with validation |
-| `locals.tf` | Derived values: each node's IP and MAC, the image pin |
-| `network.tf` | The `vigil` NAT network and its DHCP reservations |
+| `locals.tf` | Derived values: each node's IP and MAC, the reserved DHCP block (hosts 10–29), the image pin |
+| `network.tf` | The `vigil` NAT network, one DHCP reservation per host number in the block, a precondition that every node is inside it |
 | `storage.tf` | The `vigil` storage pool and the base image volume (checksum precondition) |
 | `nodes.tf` | Per node: overlay disk, cloud-init disk, VM |
 | `outputs.tf` | `nodes` (name, role, IP) and `ssh_user`, read by the Ansible inventory |
@@ -62,6 +63,9 @@ tofu output nodes
 ssh -i ~/.ssh/vigil vigil@10.77.0.10
 tofu destroy
 ```
+
+A node's `host` must be between 10 and 29: those addresses are reserved in advance, so adding or removing a node
+never touches the network. A number outside the block fails at `tofu plan`.
 
 To change sizes or nodes locally without editing the defaults, put overrides in `terraform.tfvars` (gitignored).
 

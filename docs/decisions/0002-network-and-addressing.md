@@ -1,6 +1,6 @@
 # 0002: Network and addressing
 
-- **Status:** Accepted
+- **Status:** Accepted; the reservation list is superseded by [0007](0007-pre-reserved-dhcp-block.md)
 - **Date:** 2026-11-17
 
 ## Context
