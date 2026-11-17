@@ -12,3 +12,4 @@ A decision that changes later gets a new record that supersedes the old one, so 
 | [0005](0005-dynamic-inventory.md) | Ansible inventory read from OpenTofu outputs at run time | Accepted |
 | [0006](0006-nodes-as-a-map.md) | Nodes defined as one map, created with `for_each` | Accepted |
 | [0007](0007-pre-reserved-dhcp-block.md) | Pre-reserved DHCP block (hosts 10–29), so node changes never replace the network | Accepted |
+| [0008](0008-ssh-host-keys.md) | SSH host keys: trust on first use, refuse changes, cluster-only known hosts file | Accepted |

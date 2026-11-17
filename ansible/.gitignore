@@ -2,3 +2,4 @@
 kubeconfig*
 *token*
 .vault-pass*
+.known_hosts

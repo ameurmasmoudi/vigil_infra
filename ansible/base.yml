@@ -1,0 +1,29 @@
+- name: Base configuration for every node
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Refresh the apt cache when it is older than an hour
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base tools
+      ansible.builtin.apt:
+        name:
+          - curl
+          - jq
+          - htop
+        state: present
+
+    - name: Use UTC
+      community.general.timezone:
+        name: Etc/UTC
+
+    - name: Write the login banner
+      ansible.builtin.template:
+        src: templates/motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: "0644"
