@@ -24,14 +24,15 @@ the only system that publishes images.
 
 | Folder | Contents | Status |
 |--------|----------|--------|
-| `ci/` | Jenkins and SonarQube on Docker Compose, Jenkins configuration | In progress |
-| `terraform/` | VMs on local KVM (libvirt provider), later the cloud | Planned |
-| `ansible/` | VM hardening and k3s install | Planned |
+| `ci/` | Jenkins and SonarQube on Docker Compose, Jenkins configuration | Done |
+| `terraform/` | VMs on local KVM with OpenTofu (libvirt provider), later the cloud | In progress |
+| `ansible/` | VM hardening and k3s install | In progress |
 | `helm/` | The `vigil` Helm chart | Planned |
 | `argocd/` | ArgoCD Application definitions | Planned |
 | `monitoring/` | Prometheus rules, Grafana dashboards, alerting | Planned |
 
-Each folder gets its own README with how to run it once it exists.
+Each folder gets its own README with how to run it once it exists. Design decisions and their trade-offs are
+recorded in [`docs/decisions/`](docs/decisions/README.md).
 
 ## Rules for this repo
 

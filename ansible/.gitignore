@@ -1,0 +1,4 @@
+*.retry
+kubeconfig*
+*token*
+.vault-pass*
